@@ -19,30 +19,29 @@ app.use(express.json());
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
 );
-// Get all tours
-app.get('/api/v1/tours', (req, res) => {
+
+const getTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
     data: { tours },
   });
-});
+};
 
-// Get one tour
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   const tour = tours.find(tour => tour.id === +req.params.id);
-  if (!tour)
+  if (!tour) {
     return res.status(404).json({ status: 'fail', message: 'Invalid id' });
+  }
   res.status(200).json({
     status: 'success',
     data: {
       tour,
     },
   });
-});
+};
 
-// Add new tour
-app.post('/api/v1/tours', (req, res) => {
+const addNewTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
@@ -58,10 +57,9 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
+};
 
-// Update a tour
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   if (+req.params.id > tours.length)
     return res.status(404).json({ status: 'fail', message: 'Invalid id' });
   res.status(200).json({
@@ -70,17 +68,29 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: 'updated tour here',
     },
   });
-});
+};
 
-// Delete a tour
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   if (+req.params.id > tours.length)
     return res.status(404).json({ status: 'fail', message: 'Invalid id' });
   res.status(204).json({
     status: 'success',
     data: null,
   });
-});
+};
+
+// app.get('/api/v1/tours', getTours);
+// app.post('/api/v1/tours', addNewTour);
+// app.get('/api/v1/tours/:id', getTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours').get(getTours).post(addNewTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 app.listen(PORT_NUM, () => {
   console.log(`App is running on port ${PORT_NUM}`);
