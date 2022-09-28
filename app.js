@@ -1,28 +1,31 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 const PORT_NUM = 3000;
-// Middleware to have access to the body
+// Middlewares to have access to the body
 app.use(express.json());
+app.use(morgan('dev'));
 
-// Testing express and postman
-// app.get('/', (req, res) => {
-//   res
-//     .status(200)
-//     .json({ message: 'hello from the server side!', appName: 'Natours' });
-// });
-//
-// app.post('/', (req, res) => {
-//   res.send('You can post to this endpoint...');
-// });
+// My own middleware
+app.use((req, res, next) => {
+  console.log('Hello from my own middleware 👋');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
 );
 
-const getTours = (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     data: { tours },
   });
@@ -79,13 +82,7 @@ const deleteTour = (req, res) => {
   });
 };
 
-// app.get('/api/v1/tours', getTours);
-// app.post('/api/v1/tours', addNewTour);
-// app.get('/api/v1/tours/:id', getTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
-
-app.route('/api/v1/tours').get(getTours).post(addNewTour);
+app.route('/api/v1/tours').get(getAllTours).post(addNewTour);
 app
   .route('/api/v1/tours/:id')
   .get(getTour)
