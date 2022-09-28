@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "A training app for node.js, express and mongoDB",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
   },
   "keywords": [],
   "author": "Ashraf",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.2",
     "express": "^4.18.1",
     "morgan": "^1.10.0"
   }

@@ -5,7 +5,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 // Middlewares to have access to the body
 app.use(express.json());
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 // My own middleware
 app.use((req, res, next) => {
