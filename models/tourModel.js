@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -52,7 +53,12 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
       select: false,
     },
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
     startDates: [Date],
+    slug: String,
   },
   {
     toJSON: { virtuals: true },
@@ -62,6 +68,31 @@ const tourSchema = new mongoose.Schema(
 // Virtual property to calculate duration in weeks
 tourSchema.virtual('durationWeeks').get(function () {
   return Math.ceil(this.duration / 7);
+});
+// Document middleware.
+// Before .save and .create
+tourSchema.pre('save', function (next) {
+  // "this" refers to document
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
+// Query middleware
+tourSchema.pre(/^find/, function (next) {
+  // "this" refers to query
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+// Aggregation middleware
+tourSchema.pre('aggregate', function (next) {
+  // "this" refers to query
+  this.pipeline().unshift({
+    $match: { secretTour: { $ne: true } },
+  });
+  next();
 });
 const Tour = mongoose.model('Tour', tourSchema);
 
