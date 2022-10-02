@@ -52,24 +52,23 @@ const sendErrorDev = (err, res) => {
 };
 
 const sendErrorProd = (err, res) => {
-  let error = { ...err };
   if (err.code === 11000) {
-    error = handleDuplicateFieldsDB(err);
+    err = handleDuplicateFieldsDB(err);
   }
   if (err.name === 'CastError') {
-    error = handleCastErrorDB(err);
+    err = handleCastErrorDB(err);
   }
   if (err.name === 'ValidationError') {
-    error = handleValidationErrorDB(err);
+    err = handleValidationErrorDB(err);
   }
   if (err.name === 'JsonWebTokenError') {
-    error = handleJWTError();
+    err = handleJWTError();
   }
   if (err.name === 'TokenExpiredError') {
-    error = handleJWTExpiredError();
+    err = handleJWTExpiredError();
   }
-  if (error.isOperational) sendProdOperationalError(error, res);
-  else sendProdProgrammingErrors(error, res);
+  if (err.isOperational) sendProdOperationalError(err, res);
+  else sendProdProgrammingErrors(err, res);
 };
 
 module.exports = (err, req, res, next) => {
