@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -33,6 +34,7 @@ const userSchema = new mongoose.Schema({
     },
   },
   photo: String,
+  passwordChangedAt: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -52,6 +54,19 @@ userSchema.methods.signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+};
+
+userSchema.methods.verifyToken = async tokken => {
+  return await promisify(jwt.verify)(tokken, process.env.JWT_SECRET);
+};
+
+userSchema.methods.detectChangedPass = function (JMWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = this.passwordChangedAt.getTime() / 1000;
+    return JMWTTimestamp < changedTimestamp;
+  }
+
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);
