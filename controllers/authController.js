@@ -10,7 +10,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt,
   });
   const token = newUser.signToken(newUser._id);
 
@@ -52,11 +51,13 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next(
       new AppError('You are not logged in, please log in to have access', 401)
     );
+
   // 2) Verify the token
   const decodedToken = await promisify(jwt.verify)(
     token,
     process.env.JWT_SECRET
   );
+
   // 3) Check if user still exists
   const freshUser = await User.findById(decodedToken.id);
   if (!freshUser)
@@ -66,6 +67,7 @@ exports.protect = catchAsync(async (req, res, next) => {
         401
       )
     );
+
   // 4) If user changed password after awt was issued
   if (freshUser.detectChangedPass(decodedToken.iat))
     return next(
@@ -79,3 +81,17 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = freshUser;
   next();
 });
+
+exports.restrictTo = (...userRoles) => {
+  return (req, res, next) => {
+    if (!userRoles.includes(req.user.role))
+      return next(
+        new AppError(
+          'You do not have the permission to perform that action',
+          403
+        )
+      );
+
+    next();
+  };
+};
