@@ -1,4 +1,4 @@
-const { promisify } = require('util');
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -43,6 +43,8 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: new Date(),
   },
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -64,10 +66,6 @@ userSchema.methods.signToken = id => {
   });
 };
 
-userSchema.methods.verifyToken = async tokken => {
-  return await promisify(jwt.verify)(tokken, process.env.JWT_SECRET);
-};
-
 userSchema.methods.detectChangedPass = function (JMWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = this.passwordChangedAt.getTime() / 1000;
@@ -75,6 +73,22 @@ userSchema.methods.detectChangedPass = function (JMWTTimestamp) {
   }
 
   return false;
+};
+
+userSchema.methods.createPassResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // We hash it in the db like the password
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  console.log({ resetToken }, '\n', this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //after 10 mins
+
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);
