@@ -39,10 +39,7 @@ const userSchema = new mongoose.Schema({
     default: 'user',
   },
   photo: String,
-  passwordChangedAt: {
-    type: Date,
-    default: new Date(),
-  },
+  passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
 });
@@ -54,6 +51,10 @@ userSchema.pre('save', async function (next) {
   // Hash the pass with cost of 12 and delete password field
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
+
+  // Modifies this prop when password changes and when doc is not new
+  if (!this.isNew) this.passwordChangedAt = Date.now() - 1000;
+
   next();
 });
 
