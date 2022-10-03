@@ -28,6 +28,7 @@ const createSendToken = (user, statusCode, res, sendUser = false) => {
   });
 };
 
+// noinspection JSUnusedLocalSymbols
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -176,6 +177,7 @@ exports.changePassword = catchAsync(async (req, res, next) => {
   // Get user from collection
   const user = await User.findById(req.user.id).select('+password');
   // Check if POSTed current pass is correct
+  // noinspection JSUnresolvedVariable
   if (
     !user ||
     !(await user.correctPassword(req.body.passwordCurrent, user.password))
