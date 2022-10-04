@@ -50,7 +50,7 @@
 
 const ramda = require('ramda');
 
-const filter = (model, queryString) => {
+const filter = (model, queryString, filter) => {
   const queryObj = { ...queryString };
   const excludedFilterFields = ['page', 'sort', 'limit', 'fields'];
   excludedFilterFields.forEach(el => delete queryObj[el]);
