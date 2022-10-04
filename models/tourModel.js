@@ -101,6 +101,12 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -111,23 +117,29 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return Math.ceil(this.duration / 7);
 });
-// Document middleware.
+// Document middlewares
 // Before .save and .create
 tourSchema.pre('save', function (next) {
   // "this" refers to document
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-// tourSchema.post('save', function (doc, next) {
-//   console.log(doc);
-//   next();
-// });
+
 // Query middleware
 tourSchema.pre(/^find/, function (next) {
   // "this" refers to query
   this.find({ secretTour: { $ne: true } });
   next();
 });
+tourSchema.pre(/^find/, function (next) {
+  // "this" refers to query
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
+
 // Aggregation middleware
 tourSchema.pre('aggregate', function (next) {
   // "this" refers to query
