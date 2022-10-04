@@ -1,7 +1,9 @@
+// noinspection JSIgnoredPromiseFromCall
+
 const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-dotenv.config({ path: './../../config.env' });
+dotenv.config({ path: './config.env' });
 const Tour = require('./../../models/tourModel');
 
 const DB = process.env.DATABASE.replace(
@@ -20,9 +22,7 @@ mongoose
   });
 
 // Read file
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 // Import data into DB
 const importData = async () => {
