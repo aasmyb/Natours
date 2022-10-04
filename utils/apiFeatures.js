@@ -88,4 +88,4 @@ const paginate = queryObj => {
   return queryObj;
 };
 
-exports.filterTours = ramda.pipe(filter, sort, limitFields, paginate);
+exports.filterFeatures = ramda.pipe(filter, sort, limitFields, paginate);

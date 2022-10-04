@@ -1,7 +1,7 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const Tour = require('../models/tourModel');
-const { filterTours } = require('./../utils/apiFeatures');
+const { filterFeatures } = require('./../utils/apiFeatures');
 
 exports.deleteOne = Model =>
   catchAsync(async (req, res, next) => {
@@ -61,8 +61,8 @@ exports.getAll = Model =>
     if (tourId) req.query.tour = tourId;
 
     // Execute query
-    const filterFeatures = filterTours(Model, req.query);
-    const doc = await filterFeatures.query;
+    const features = filterFeatures(Model, req.query);
+    const doc = await features.query;
 
     // Send response
     res.status(200).json({
