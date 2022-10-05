@@ -20,6 +20,11 @@ router
     tourController.getMonthlyPlan
   );
 
+router.get(
+  '/tours-within/:distance/center/:latlng/unit/:unit',
+  tourController.getTourWithin
+);
+
 router
   .route('/')
   .get(tourController.getAllTours)
