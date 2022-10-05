@@ -113,6 +113,12 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// Indexes
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // Virtual property to calculate duration in weeks
 tourSchema.virtual('durationWeeks').get(function () {
   return Math.ceil(this.duration / 7);
