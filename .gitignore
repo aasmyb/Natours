@@ -1,3 +1,4 @@
 /node_modules/
 /.idea/
 /prettier.config.js
+/config.env
