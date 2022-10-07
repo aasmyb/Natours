@@ -60,6 +60,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   const auth = req.headers.authorization;
   if (auth && auth.startsWith('Bearer')) token = auth.split(' ')[1];
+  else if (req.cookies.jwt) token = req.cookies.jwt;
   if (!token)
     return next(
       new AppError('You are not logged in, please log in to have access', 401)
@@ -92,6 +93,29 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // Grant access to protected route
   req.user = freshUser;
+  next();
+});
+
+// Only for render pages => no error
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (!token) return next();
+
+  // 1) Verify the token
+  const decodedToken = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
+
+  // 2) Check if user still exists
+  const freshUser = await User.findById(decodedToken.id);
+  if (!freshUser) return next();
+
+  // 3) If user changed password after awt was issued
+  if (freshUser.detectChangedPass(decodedToken.iat)) return next();
+
+  // THERE IS A LOGGED IN USER
+  res.locals.user = freshUser;
   next();
 });
 

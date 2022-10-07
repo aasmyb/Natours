@@ -2,3 +2,4 @@
 /.idea/
 /prettier.config.js
 /config.env
+/.cache/

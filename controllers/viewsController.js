@@ -28,3 +28,11 @@ exports.getTour = catchAsync(async (req, res, next) => {
     tour,
   });
 });
+
+exports.getLoginForm = catchAsync(async (req, res, next) => {
+  // Build template
+  // Render template using tour data
+  res.status(200).render('login', {
+    title: 'log into your account',
+  });
+});
