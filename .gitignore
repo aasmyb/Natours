@@ -3,3 +3,5 @@
 /prettier.config.js
 /config.env
 /.cache/
+/.parcel-cache/
+/public/js/dist/

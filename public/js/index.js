@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import { login, logout } from './login';
 
 const attachEventListener = (elSelector, action, handler) => {

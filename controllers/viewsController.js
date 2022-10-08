@@ -6,7 +6,6 @@ exports.getOverview = catchAsync(async (req, res, next) => {
   // Get tour data from collection
   const tours = await Tour.find();
 
-  // Build template
   // Render template using tour data
   res.status(200).render('overview', {
     title: 'All Tours',
@@ -23,8 +22,6 @@ exports.getTour = catchAsync(async (req, res, next) => {
 
   if (!tour) return next(new AppError('There is no tour with that name!', 404));
 
-  console.log(tour);
-  // Build template
   // Render template using tour data
   res.status(200).render('tour', {
     title: tour.name,
@@ -32,10 +29,16 @@ exports.getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getLoginForm = catchAsync(async (req, res, next) => {
-  // Build template
+exports.getLoginForm = (req, res) => {
   // Render template using tour data
   res.status(200).render('login', {
     title: 'log into your account',
   });
-});
+};
+
+exports.getAccount = (req, res) => {
+  // Render template using tour data
+  res.status(200).render('account', {
+    title: 'Your account',
+  });
+};
