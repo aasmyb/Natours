@@ -1,5 +1,5 @@
 import { login, logout } from './login';
-import { updateMe } from './updateSettings';
+import { updateUserSettings } from './updateSettings';
 
 const attachEventListener = (elSelector, action, handler) => {
   document.querySelector(elSelector).addEventListener(action, handler);
@@ -29,7 +29,13 @@ if (getElement('.form-user-data')) {
     e.preventDefault();
     const arrData = [...new FormData(e.currentTarget)];
     const data = Object.fromEntries(arrData);
-    await updateMe(data.email, data.name);
+    let type;
+    if (data.password) {
+      type = 'password';
+      e.currentTarget.reset();
+    } else type = 'data';
+    await updateUserSettings(data, type);
   };
   attachEventListener('.form-user-data', 'submit', updateMeHandler);
+  attachEventListener('.form-user-settings', 'submit', updateMeHandler);
 }
