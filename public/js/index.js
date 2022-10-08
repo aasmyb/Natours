@@ -25,17 +25,18 @@ if (getElement('.nav__el--logout')) {
 }
 
 if (getElement('.form-user-data')) {
-  const updateMeHandler = async e => {
+  const updateDataHandler = async e => {
     e.preventDefault();
-    const arrData = [...new FormData(e.currentTarget)];
-    const data = Object.fromEntries(arrData);
-    let type;
-    if (data.password) {
-      type = 'password';
-      e.currentTarget.reset();
-    } else type = 'data';
-    await updateUserSettings(data, type);
+    const data = new FormData(e.currentTarget);
+    await updateUserSettings(data, 'data');
   };
-  attachEventListener('.form-user-data', 'submit', updateMeHandler);
-  attachEventListener('.form-user-settings', 'submit', updateMeHandler);
+
+  const updatePassHandler = async e => {
+    e.preventDefault();
+    const data = Object.fromEntries([...new FormData(e.currentTarget)]);
+    e.currentTarget.reset();
+    await updateUserSettings(data, 'password');
+  };
+  attachEventListener('.form-user-data', 'submit', updateDataHandler);
+  attachEventListener('.form-user-settings', 'submit', updatePassHandler);
 }
