@@ -1,26 +1,11 @@
-const multer = require('multer');
 const sharp = require('sharp');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const User = require('./../models/userModel');
 const factory = require('./handlerFactory');
+const uploader = require('./../utils/multerUpload');
 
-const multerStorage = multer.memoryStorage();
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
-    cb(null, true);
-  } else {
-    const err = new AppError('Not an image! Please upload only images', 400);
-    cb(err, false);
-  }
-};
-
-const photoUploader = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-});
-
-exports.uploadUserPhoto = photoUploader.single('photo');
+exports.uploadUserPhoto = uploader.single('photo');
 
 exports.resizedUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
@@ -45,9 +30,6 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  const { file, body } = req;
-  console.log({ file });
-  console.log({ body });
   // Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm)
     return next(
