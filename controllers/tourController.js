@@ -1,8 +1,8 @@
 const sharp = require('sharp');
-const uploader = require('./../utils/multerUpload');
-const Tour = require('./../models/tourModel');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+const uploader = require('../utils/multerUpload');
+const Tour = require('../models/tourModel');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
 exports.uploadTourImages = uploader.fields([

@@ -1,8 +1,8 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
-const User = require('./../models/userModel');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+const User = require('../models/userModel');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 const Email = require('../utils/email');
 const crypto = require('crypto');
 
@@ -156,9 +156,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // Generate random token
   const resetToken = user.createPassResetToken();
-  await user.save({ validateBeforeSave: false });
-
-  // Send it to user's email
+  await user.save({ validateBeforeSave: false });// Send it to user's email
   try {
     const resetUrl = `${req.protocol}://${req.get(
       'host'

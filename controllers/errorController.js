@@ -1,4 +1,4 @@
-const AppError = require('./../utils/appError');
+const AppError = require('../utils/appError');
 
 const renderError = (err, res) => {
   res.status(err.statusCode).render('error', {

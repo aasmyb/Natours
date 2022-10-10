@@ -1,9 +1,9 @@
 const sharp = require('sharp');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
-const User = require('./../models/userModel');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
+const User = require('../models/userModel');
 const factory = require('./handlerFactory');
-const uploader = require('./../utils/multerUpload');
+const uploader = require('../utils/multerUpload');
 
 exports.uploadUserPhoto = uploader.single('photo');
 
