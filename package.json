@@ -12,6 +12,7 @@
   "author": "Ashraf",
   "license": "ISC",
   "dependencies": {
+    "@stripe/stripe-js": "^1.38.1",
     "axios": "^1.1.2",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
@@ -31,6 +32,7 @@
     "ramda": "^0.28.0",
     "sharp": "^0.31.1",
     "slugify": "^1.6.5",
+    "stripe": "^10.13.0",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
   },

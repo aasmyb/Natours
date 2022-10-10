@@ -12,6 +12,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 
@@ -25,7 +26,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security for HTTP headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+app.use((req, res, next) => {
+  res.removeHeader('Cross-Origin-Resource-Policy');
+  res.removeHeader('Cross-Origin-Embedder-Policy');
+  next();
+});
 
 // Development logging
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
@@ -74,6 +84,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 // Unhandled routes
 app.all('*', (req, res, next) => {

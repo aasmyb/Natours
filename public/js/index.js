@@ -1,5 +1,6 @@
 import { login, logout } from './login';
 import { updateUserSettings } from './updateSettings';
+import { bookTour } from './stripe';
 
 const attachEventListener = (elSelector, action, handler) => {
   document.querySelector(elSelector).addEventListener(action, handler);
@@ -39,4 +40,10 @@ if (getElement('.form-user-data')) {
   };
   attachEventListener('.form-user-data', 'submit', updateDataHandler);
   attachEventListener('.form-user-settings', 'submit', updatePassHandler);
+}
+
+if (getElement('#book-tour')) {
+  const bookTourHandler = async e =>
+    await bookTour(e.currentTarget.dataset.tourId);
+  attachEventListener('#book-tour', 'click', bookTourHandler);
 }
