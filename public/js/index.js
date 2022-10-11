@@ -1,6 +1,7 @@
 import { login, logout } from './login';
 import { updateUserSettings } from './updateSettings';
 import { bookTour } from './stripe';
+import { showAlert } from './alert';
 
 const attachEventListener = (elSelector, action, handler) => {
   document.querySelector(elSelector).addEventListener(action, handler);
@@ -47,3 +48,6 @@ if (getElement('#book-tour')) {
     await bookTour(e.currentTarget.dataset.tourId);
   attachEventListener('#book-tour', 'click', bookTourHandler);
 }
+
+const alertMsg = getElement('body').dataset.alert;
+if (alertMsg) showAlert('success', alertMsg);
