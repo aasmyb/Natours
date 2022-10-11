@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "A training app for node.js, express and mongoDB",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
+    "start:dev": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js",
     "watch:js": "parcel watch ./public/js/index.js --dist-dir ./public/js/dist",
@@ -42,5 +43,8 @@
     "buffer": "^6.0.3",
     "parcel": "^2.7.0",
     "process": "^0.11.10"
+  },
+  "engines": {
+    "node": ">=16.0.0 <17.0.0"
   }
 }
