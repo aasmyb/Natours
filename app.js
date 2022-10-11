@@ -8,6 +8,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -25,20 +26,13 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // Global middlewares
+app.use(cors());
+app.options('*', cors());
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security for HTTP headers
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-  })
-);
-app.use((req, res, next) => {
-  res.removeHeader('Cross-Origin-Resource-Policy');
-  res.removeHeader('Cross-Origin-Embedder-Policy');
-  next();
-});
+app.use(helmet());
 
 // Development logging
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
