@@ -26,13 +26,24 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // Global middlewares
+// Allowing CORS
 app.use(cors());
 app.options('*', cors());
+
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security for HTTP headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+app.use((req, res, next) => {
+  res.removeHeader('Cross-Origin-Resource-Policy');
+  res.removeHeader('Cross-Origin-Embedder-Policy');
+  next();
+});
 
 // Development logging
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
