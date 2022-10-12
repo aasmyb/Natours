@@ -2,7 +2,6 @@ const Tour = require('../models/tourModel');
 const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const bookingController = require('../controllers/bookingController');
 
 exports.handleAlerts = (req, res, next) => {
   const { alert } = req.query;
@@ -34,10 +33,10 @@ exports.getTour = catchAsync(async (req, res, next) => {
 
   if (!tour) return next(new AppError('There is no tour with that name!', 404));
 
-  tour.isBooked = bookingController.checkBookedTour(
-    res.locals.user.id,
-    tour.id
-  );
+  tour.isBooked = await Booking.findOne({
+    user: res.locals.user.id,
+    tour: tour.id,
+  });
   // Render template using tour data
   res.status(200).render('tour', {
     title: tour.name,
