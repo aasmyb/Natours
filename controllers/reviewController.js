@@ -9,7 +9,7 @@ exports.setTourUserIds = catchAsync(async (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
   if (!req.body.user) req.body.user = req.user.id;
 
-  // Only add review if tour is not booked
+  // Only add review if tour is booked
   const isBooked = await Booking.findOne({
     user: req.body.user,
     tour: req.body.tour,

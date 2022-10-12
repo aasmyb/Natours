@@ -28,9 +28,10 @@ exports.getOne = (Model, populateOptions) =>
 
 exports.getAll = Model =>
   catchAsync(async (req, res, next) => {
-    // Hack solution for nested reviews
-    const { tourId } = req.params;
+    // Hack solution for nested reviews/bookings
+    const { tourId, userId } = req.params;
     if (tourId) req.query.tour = tourId;
+    if (userId) req.query.user = userId;
 
     // Execute query
     const features = filterFeatures(Model, req.query);
