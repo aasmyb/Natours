@@ -4,9 +4,18 @@ const Booking = require('../models/bookingModel');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
+const AppError = require('../utils/appError');
+
+const checkBookedTour = catchAsync(async (user, tour) => {
+  const isBooked = await Booking.findOne({ user, tour });
+  return !!isBooked;
+});
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
-  // 1) Get the currently booked tour
+  // 1) Get the currently booked tour and check if it's not reserved
+  if (!checkBookedTour(req.user.id, req.params.tourId))
+    return next(new AppError('You can not book the same tour twice!', 400));
+
   const tour = await Tour.findById(req.params.tourId);
 
   // 2) Create checkout session
