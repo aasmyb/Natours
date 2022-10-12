@@ -44,8 +44,21 @@ const handleCastErrorDB = err => {
 };
 
 const handleDuplicateFieldsDB = err => {
-  const dupValue = err.errmsg.match(/(?<=(["']\b))(?:(?=(\\?))\2.)*?(?=\1)/)[0];
-  const message = `Duplicate field value: ${dupValue}, please use another value.`;
+  let message, dupValue;
+
+  // Handle duplicated reviews/bookings
+  if (err?.keyPattern?.user && err?.keyPattern?.tour) {
+    dupValue = err.errmsg.match(/(?<=natours\.).*?(?=\s)/)[0];
+    message = `You can not add a ${dupValue.slice(
+      0,
+      -1
+    )} for the same tour twice!`;
+    return new AppError(message, 400);
+  }
+
+  const dupKey = Object.keys(err?.keyValue)[0];
+  dupValue = Object.values(err?.keyValue)[0];
+  message = `This ${dupKey}: (${dupValue}) is already in use! Please use another one.`;
   return new AppError(message, 400);
 };
 
