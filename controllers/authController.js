@@ -8,7 +8,7 @@ const crypto = require('crypto');
 
 const createSendToken = (user, statusCode, req, res, sendUser = false) => {
   const data = sendUser ? { user } : undefined;
-  const token = user.signToken(user._id);
+  const token = user.signToken(user._id, process.env.JWT_EXPIRES_IN);
 
   res.cookie('jwt', token, {
     expires: new Date(
@@ -28,17 +28,37 @@ const createSendToken = (user, statusCode, req, res, sendUser = false) => {
   });
 };
 
-// noinspection JSUnusedLocalSymbols
 exports.signup = catchAsync(async (req, res, next) => {
+  // 1) Add user to DB
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
-  const url = `${req.protocol}://${req.get('host')}/me`;
-  await new Email(newUser, url).sendWelcome();
-  createSendToken(newUser, 201, req, res, true);
+
+  // 2) Create th token
+  const confirmToken = newUser.signToken(
+    newUser._id,
+    process.env.JWT_EMAIL_CONFIRM_EXPIRES_IN
+  );
+  console.log(confirmToken);
+
+  // 3) Send token to email
+  const confirmUrl = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/users/confirmAccount/${confirmToken}`;
+
+  await new Email(newUser, confirmUrl).sendAccountConfirm();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Token sent to email!',
+  });
+
+  // const url = `${req.protocol}://${req.get('host')}/me`;
+  // await new Email(newUser, url).sendWelcome();
+  // createSendToken(newUser, 201, req, res, true);
 });
 
 exports.login = catchAsync(async (req, res, next) => {

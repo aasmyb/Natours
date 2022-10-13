@@ -50,6 +50,11 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+  confirmed: {
+    type: Boolean,
+    default: false,
+    select: false,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -74,10 +79,8 @@ userSchema.pre(/^find/, function (next) {
 userSchema.methods.correctPassword = async (candidatePass, userPass) =>
   await bcrypt.compare(candidatePass, userPass);
 
-userSchema.methods.signToken = id => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+userSchema.methods.signToken = (id, expiresIn) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn });
 };
 
 userSchema.methods.detectChangedPass = function (JMWTTimestamp) {
