@@ -2,6 +2,7 @@ import { login, logout } from './login';
 import { updateUserSettings } from './updateSettings';
 import { bookTour } from './stripe';
 import { showAlert } from './alert';
+import { confirmSignup, signup } from './signup';
 
 const attachEventListener = (elSelector, action, handler) => {
   document.querySelector(elSelector).addEventListener(action, handler);
@@ -33,12 +34,13 @@ if (getElement('.form-user-data')) {
     await updateUserSettings(data, 'data');
   };
 
-  const updatePassHandler = async e => {
+  const updatePassHandler = async function (e) {
     e.preventDefault();
-    const data = Object.fromEntries([...new FormData(e.currentTarget)]);
-    e.currentTarget.reset();
-    await updateUserSettings(data, 'password');
+    const data = Object.fromEntries([...new FormData(this.currentTarget)]);
+    const res = await updateUserSettings(data, 'password');
+    if (res === 'success') this.reset();
   };
+
   attachEventListener('.form-user-data', 'submit', updateDataHandler);
   attachEventListener('.form-user-settings', 'submit', updatePassHandler);
 }
@@ -46,8 +48,31 @@ if (getElement('.form-user-data')) {
 if (getElement('#book-tour')) {
   const bookTourHandler = async e =>
     await bookTour(e.currentTarget.dataset.tourId);
+
   attachEventListener('#book-tour', 'click', bookTourHandler);
 }
 
 const alertMsg = getElement('body').dataset.alert;
 if (alertMsg) showAlert('success', alertMsg);
+
+// Handle signup
+if (getElement('.form--signup')) {
+  const signupHandler = async function (e) {
+    e.preventDefault();
+    const data = Object.fromEntries([...new FormData(this)]);
+    const res = await signup(data);
+    if (res === 'success') this.reset();
+  };
+
+  attachEventListener('.form--signup', 'submit', signupHandler);
+}
+
+// Handle account confirmation
+if (location.pathname.startsWith('/signup/confirm/')) {
+  const [token] = location.pathname.split('/').slice(-1);
+
+  // Confirm user isn't logged in yet
+  if (!getElement('.nav__el--logout')) {
+    (async () => await confirmSignup(token))();
+  }
+}

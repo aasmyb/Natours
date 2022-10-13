@@ -1,0 +1,9 @@
+extends base
+
+block content
+  main.main
+    .error
+      .error__title
+        h1.heading-secondary(style='font-size: 3.5rem')= msg
+      br
+      a.button.btn.btn--green(href=`${btnTarget}`)= btnText

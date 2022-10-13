@@ -13,5 +13,15 @@ router.use(authController.isLoggedIn);
 router.get('/', viewController.getOverview);
 router.get('/tour/:slug', viewController.getTour);
 router.get('/login', viewController.getLoginForm);
+router.get('/signup', viewController.getSignupForm);
+router.get(
+  '/signup/confirm/:token',
+  viewController.getSuccess(
+    'Confirmation',
+    'Congratulations! your account is now confirmed',
+    '/',
+    'Explore Tours!'
+  )
+);
 
 module.exports = router;

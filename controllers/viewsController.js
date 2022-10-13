@@ -33,10 +33,14 @@ exports.getTour = catchAsync(async (req, res, next) => {
 
   if (!tour) return next(new AppError('There is no tour with that name!', 404));
 
-  tour.isBooked = await Booking.findOne({
-    user: res.locals.user.id,
-    tour: tour.id,
-  });
+  // If there is a user => check if he booked tour
+  if (res.locals.user) {
+    tour.isBooked = await Booking.findOne({
+      user: res.locals.user.id,
+      tour: tour.id,
+    });
+  }
+
   // Render template using tour data
   res.status(200).render('tour', {
     title: tour.name,
@@ -48,6 +52,23 @@ exports.getLoginForm = (req, res) => {
   // Render template using tour data
   res.status(200).render('login', {
     title: 'log into your account',
+  });
+};
+
+exports.getSignupForm = (req, res) => {
+  // Render template using tour data
+  res.status(200).render('signup', {
+    title: 'Create new account',
+  });
+};
+
+exports.getSuccess = (title, msg, btnTarget, btnText) => (req, res) => {
+  // Render template using tour data
+  res.status(200).render('success', {
+    title,
+    msg,
+    btnTarget,
+    btnText,
   });
 };
 

@@ -46,7 +46,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // 3) Send confirmation token to email
   const confirmUrl = `${req.protocol}://${req.get(
     'host'
-  )}/api/v1/users/confirmAccount/${confirmToken}`;
+  )}/signup/confirm/${confirmToken}`;
   await new Email(newUser, confirmUrl).sendAccountConfirm();
 
   res.status(200).json({
@@ -84,12 +84,12 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide email and password', 400));
 
   // Check if email and password are correct in DB
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select('+password +confirmed');
   if (!user || !(await user.correctPassword(password, user.password)))
     return next(new AppError('Incorrect email or password', 401));
 
   // Check if account email is confirmed
-  if (!user.confirmed)
+  if (user.confirmed === false)
     return next(
       new AppError(
         'Your account is not confirmed yet! Please check your email for confirmation link',
