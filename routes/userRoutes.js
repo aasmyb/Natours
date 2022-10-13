@@ -7,12 +7,24 @@ const router = express.Router();
 
 router.use('/:userId/bookings', bookingRouter);
 
-router.post('/signup', authController.signup);
+router.post('/signup', authController.preventLoggedIn, authController.signup);
+router.get(
+  '/confirmAccount/:token',
+  authController.preventLoggedIn,
+  authController.confirmAccountSignup
+);
+router.post(
+  '/forgotPassword',
+  authController.preventLoggedIn,
+  authController.forgotPassword
+);
+router.patch(
+  '/resetPassword/:token',
+  authController.preventLoggedIn,
+  authController.resetPassword
+);
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
-router.post('/forgotPassword', authController.forgotPassword);
-router.patch('/resetPassword/:token', authController.resetPassword);
-router.post('/confirmAccount/:token', authController.resetPassword);
 
 // Protect all routes after this middleware => as in the end routers are middlewares
 router.use(authController.protect);

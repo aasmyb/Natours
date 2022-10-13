@@ -42,23 +42,38 @@ exports.signup = catchAsync(async (req, res, next) => {
     newUser._id,
     process.env.JWT_EMAIL_CONFIRM_EXPIRES_IN
   );
-  console.log(confirmToken);
 
-  // 3) Send token to email
+  // 3) Send confirmation token to email
   const confirmUrl = `${req.protocol}://${req.get(
     'host'
   )}/api/v1/users/confirmAccount/${confirmToken}`;
-
   await new Email(newUser, confirmUrl).sendAccountConfirm();
 
   res.status(200).json({
     status: 'success',
-    message: 'Token sent to email!',
+    message: 'Confirmation token sent to email!',
   });
+});
 
-  // const url = `${req.protocol}://${req.get('host')}/me`;
-  // await new Email(newUser, url).sendWelcome();
-  // createSendToken(newUser, 201, req, res, true);
+exports.confirmAccountSignup = catchAsync(async (req, res, next) => {
+  // 1) Confirm token is valid
+  const { token } = req.params;
+  const decodedToken = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
+
+  // 2) Mark user as confirmed in DB
+  let user = await User.findById(decodedToken.id);
+  user.confirmed = true;
+  user = await user.save({ validateBeforeSave: false });
+
+  // 3) Send welcome email
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  await new Email(user, url).sendWelcome();
+
+  // 4) Login user
+  createSendToken(user, 201, req, res, true);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -75,6 +90,18 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // if everything is 10/10 => send token to the client
   createSendToken(user, 200, req, res);
+});
+
+exports.preventLoggedIn = catchAsync(async (req, res, next) => {
+  // If user is already logged in
+  if (req.cookies.jwt)
+    return next(
+      new AppError(
+        'You are already logged in! You do not have permission to perform this action.',
+        401
+      )
+    );
+  next();
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
