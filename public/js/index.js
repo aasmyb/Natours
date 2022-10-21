@@ -3,6 +3,7 @@ import { updateUserSettings } from './updateSettings';
 import { bookTour } from './stripe';
 import { showAlert } from './alert';
 import { confirmSignup, signup } from './signup';
+import { forgotPassword, resetPassword } from './forgotPassword';
 
 const attachEventListener = (elSelector, action, handler) => {
   document.querySelector(elSelector).addEventListener(action, handler);
@@ -36,7 +37,7 @@ if (getElement('.form-user-data')) {
 
   const updatePassHandler = async function (e) {
     e.preventDefault();
-    const data = Object.fromEntries([...new FormData(this.currentTarget)]);
+    const data = Object.fromEntries([...new FormData(this)]);
     const res = await updateUserSettings(data, 'password');
     if (res === 'success') this.reset();
   };
@@ -75,4 +76,33 @@ if (location.pathname.startsWith('/signup/confirm/')) {
   if (!getElement('.nav__el--logout')) {
     (async () => await confirmSignup(token))();
   }
+}
+
+// Handle forget password
+if (getElement('.form--forget-password')) {
+  const forgetPasswordHandler = async function (e) {
+    e.preventDefault();
+    const data = Object.fromEntries([...new FormData(this)]);
+    const res = await forgotPassword(data.email);
+    if (res === 'success') this.reset();
+  };
+
+  attachEventListener(
+    '.form--forget-password',
+    'submit',
+    forgetPasswordHandler
+  );
+}
+
+// Handle password reset
+if (getElement('.form--reset-password')) {
+  const forgetPasswordHandler = async function (e) {
+    const [token] = location.pathname.split('/').slice(-1);
+    e.preventDefault();
+    const data = Object.fromEntries([...new FormData(this)]);
+    const res = await resetPassword(data.password, data.passwordConfirm, token);
+    if (res === 'success') this.reset();
+  };
+
+  attachEventListener('.form--reset-password', 'submit', forgetPasswordHandler);
 }

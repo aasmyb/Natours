@@ -89,3 +89,17 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
     tours,
   });
 });
+
+exports.getForgotPasswordForm = (req, res) => {
+  // Render template using tour data
+  res.status(200).render('forgotPassword', {
+    title: 'Forgot your password',
+  });
+};
+
+exports.getResetPasswordForm = (req, res) => {
+  // Render template using tour data
+  res.status(200).render('resetPassword', {
+    title: 'Reset your password',
+  });
+};
