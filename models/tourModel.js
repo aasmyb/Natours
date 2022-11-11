@@ -125,7 +125,7 @@ tourSchema.virtual('durationWeeks').get(function () {
   return Math.ceil(this.duration / 7);
 });
 
-// Virtual populate
+// Virtual populate => parent referencing
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
@@ -146,6 +146,8 @@ tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   next();
 });
+
+// Regular populate
 tourSchema.pre(/^find/, function (next) {
   // "this" refers to query
   this.populate({

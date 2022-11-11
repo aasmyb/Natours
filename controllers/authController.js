@@ -28,6 +28,13 @@ const createSendToken = (user, statusCode, req, res, sendUser = false) => {
   });
 };
 
+const sendLogoutCookie = res => {
+  res.cookie('jwt', 'loggedOut', {
+    expires: new Date(Date.now() + 1 * 1000),
+    httpOnly: true,
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   // 1) Add user to DB
   const newUser = await User.create({
@@ -157,8 +164,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 // Only for render pages => no error
 exports.isLoggedIn = async (req, res, next) => {
+  let token;
   try {
-    const token = req.cookies.jwt;
+    token = req.cookies.jwt;
     if (!token) return next();
 
     // 1) Verify the token
@@ -178,15 +186,15 @@ exports.isLoggedIn = async (req, res, next) => {
     res.locals.user = freshUser;
     next();
   } catch (err) {
+    // Delete manipulated token
+    if (token) sendLogoutCookie(res);
+
     next();
   }
 };
 
 exports.logout = (req, res, next) => {
-  res.cookie('jwt', 'loggedOut', {
-    expires: new Date(Date.now() + 1 * 1000),
-    httpOnly: true,
-  });
+  sendLogoutCookie(res);
   res.status(200).json({ status: 'success' });
 };
 
