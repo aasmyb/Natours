@@ -1,13 +1,19 @@
 const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const validationController = require('../controllers/validationController');
 const bookingRouter = require('./bookingRoutes');
 
 const router = express.Router();
 
 router.use('/:userId/bookings', bookingRouter);
 
-router.post('/signup', authController.preventLoggedIn, authController.signup);
+router.post(
+  '/signup',
+  authController.preventLoggedIn,
+  validationController.signupVal,
+  authController.signup
+);
 router.get(
   '/confirmAccount/:token',
   authController.preventLoggedIn,

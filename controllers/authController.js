@@ -1,10 +1,13 @@
 const { promisify } = require('util');
+const crypto = require('crypto');
+
 const jwt = require('jsonwebtoken');
+
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Email = require('../utils/email');
-const crypto = require('crypto');
+const validationController = require('../controllers/validationController');
 
 const createSendToken = (user, statusCode, req, res, sendUser = false) => {
   const data = sendUser ? { user } : undefined;
@@ -36,6 +39,9 @@ const sendLogoutCookie = res => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  const valError = validationController.checkValidation(req);
+  if (valError) return next(new AppError(valError, 401));
+
   // 1) Add user to DB
   const newUser = await User.create({
     name: req.body.name,
