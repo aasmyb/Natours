@@ -26,8 +26,12 @@ mongoose
   });
 
 const PORT_NUM = process.env.PORT || 3000;
+const currentTime = new Date().toLocaleTimeString('default', {
+  hour: '2-digit',
+  minute: '2-digit',
+});
 const server = app.listen(PORT_NUM, () => {
-  console.log(`App is running on port ${PORT_NUM}`);
+  console.log(`${currentTime} - App is running on port ${PORT_NUM}`);
 });
 
 process.on('unhandledRejection', err => {

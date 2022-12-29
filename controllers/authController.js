@@ -18,7 +18,7 @@ const createSendToken = (user, statusCode, req, res, sendUser = false) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
   });
 
   // Remove password from output
@@ -27,27 +27,24 @@ const createSendToken = (user, statusCode, req, res, sendUser = false) => {
   res.status(statusCode).json({
     status: 'success',
     token,
-    data,
+    data
   });
 };
 
 const sendLogoutCookie = res => {
   res.cookie('jwt', 'loggedOut', {
     expires: new Date(Date.now() + 1 * 1000),
-    httpOnly: true,
+    httpOnly: true
   });
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const valError = validationController.checkValidation(req);
-  if (valError) return next(new AppError(valError, 401));
-
   // 1) Add user to DB
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
+    passwordConfirm: req.body.passwordConfirm
   });
 
   // 2) Create th token
@@ -64,7 +61,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'Confirmation token sent to email!',
+    message: 'Confirmation token sent to email!'
   });
 });
 
@@ -236,7 +233,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'Token send to email!',
+      message: 'Token send to email!'
     });
   } catch (err) {
     user.passwordResetToken = undefined;
@@ -257,7 +254,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .digest('hex');
   const user = await User.findOne({
     passwordResetToken: hashedToken,
-    passwordResetExpires: { $gt: Date.now() },
+    passwordResetExpires: { $gt: Date.now() }
   });
 
   // If token has not expired and user exists => set new password

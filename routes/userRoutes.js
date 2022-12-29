@@ -12,6 +12,7 @@ router.post(
   '/signup',
   authController.preventLoggedIn,
   validationController.signupVal,
+  validationController.checkValidation,
   authController.signup
 );
 router.get(
